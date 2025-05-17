@@ -1,0 +1,18 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 767 416" width="767" height="416">
+	<title>Untitled-1</title>
+	<defs>
+		<clipPath clipPathUnits="userSpaceOnUse" id="cp1">
+			<path d="m0 0h767v416h-767z"/>
+		</clipPath>
+	</defs>
+	<style>
+		tspan { white-space:pre } 
+		.t0 { font-size: 75px;fill: #ffffff;font-weight: 400;font-family: "RammettoOne-Regular", "Rammetto One" } 
+	</style>
+	<g id="Artboard 1" clip-path="url(#cp1)">
+		<text id="nimbly" style="transform: matrix(1,0,0,1,382,234.25)" >
+			<tspan x="-189" y="0" class="t0" dx="0 9 9 9 9 9 9" >nimbly
+</tspan>
+		</text>
+	</g>
+</svg>
