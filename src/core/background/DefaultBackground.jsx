@@ -1,4 +1,3 @@
-// DefaultBackground.jsx
 import { useBackground } from "./BackgroundProvider";
 
 function DefaultBackground({ visible = true }) {
