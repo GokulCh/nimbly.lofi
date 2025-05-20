@@ -2,8 +2,10 @@
 
 import { useBackground } from "./BackgroundProvider";
 
-function DefaultBackground({ visible = true }) {
-  // const { background } = useBackground();
+function DefaultBackground({ visible = true, mode = "image" }) {
+  const { background } = useBackground();
+
+  const isImageMode = mode === "image";
 
   return (
     <div
@@ -11,38 +13,34 @@ function DefaultBackground({ visible = true }) {
         visible ? "opacity-100" : "opacity-0"
       }`}
     >
-      {/* Solid or dynamic background */}
-      <div
-        className="absolute inset-0 bg-[#18181b]"
-        // style={{
-        //   backgroundImage: `url(${background})`,
-        //   backgroundSize: "cover",
-        //   backgroundPosition: "center"
-        // }}
-      />
-
-      {/* Optional Centered logo */}
-      {/* <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <img
-          src="/nimbly.svg"
-          alt="Nimbly Logo"
-          className="w-[280px] h-[280px] opacity-30 select-none"
-          draggable="false"
+      {/* Optional image background */}
+      {isImageMode && (
+        <div
+          className="absolute inset-0 bg-[#18181b]"
+          style={{
+            backgroundImage: `url(${background})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center"
+          }}
         />
-      </div> */}
+      )}
 
       {/* Grid overlay with radial mask */}
       <div
         className="absolute inset-0 flex items-center justify-center"
         style={{
           backgroundImage: `
-            linear-gradient(to right, rgba(255,255,255,0.12) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255,255,255,0.12) 1px, transparent 1px)
+            linear-gradient(to right, rgba(255,255,255, 0.12) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255, 0.12) 1px, transparent 1px)
           `,
           backgroundSize: "40px 40px",
           backgroundPosition: "center",
-          WebkitMaskImage: "radial-gradient(circle at 50% 50%, white 60%, transparent 100%)",
-          maskImage: "radial-gradient(circle at 50% 50%, white 60%, transparent 100%)"
+          WebkitMaskImage: `radial-gradient(circle at 50% 50%, ${
+            isImageMode ? "transparent 60%, white 100%" : "white 60%, transparent 100%"
+          })`,
+          maskImage: `radial-gradient(circle at 50% 50%, ${
+            isImageMode ? "transparent 60%, white 100%" : "white 60%, transparent 100%)"
+          })`
         }}
       />
     </div>

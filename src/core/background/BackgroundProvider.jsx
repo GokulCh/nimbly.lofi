@@ -1,10 +1,10 @@
 import { createContext, useContext, useEffect, useState } from "react";
 const BackgroundContext = createContext();
-const DEFAULT_BG = "/images/placeholder.jpg";
+const DEFAULT_BG = "/images/placeholder_background_shoji.png";
 
 export function BackgroundProvider({ children }) {
   const [background, setBackground] = useState(() => {
-    return localStorage.getItem("background") || DEFAULT_BG;
+    return DEFAULT_BG;
   });
   useEffect(() => {
     localStorage.setItem("background", background);
