@@ -1,3 +1,5 @@
+"use client";
+
 import { useBackground } from "./BackgroundProvider";
 
 function DefaultBackground({ visible = true }) {
@@ -5,7 +7,7 @@ function DefaultBackground({ visible = true }) {
 
   return (
     <div
-      className={`fixed inset-0 -z-10 pointer-events-none transition-opacity duration-[1000ms] ease-out ${
+      className={`fixed inset-0 -z-10 pointer-events-none transition-opacity duration-700 ease-in-out ${
         visible ? "opacity-100" : "opacity-0"
       }`}
     >

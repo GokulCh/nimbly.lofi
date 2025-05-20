@@ -1,0 +1,14 @@
+"use client";
+
+function HoverButton({ className = "", children, ...props }) {
+  return (
+    <button
+      className={`${className} bg-black/20 backdrop-blur-md border border-white/10 rounded-lg text-white/80 hover:text-white transition-all duration-700 ease-in-out hover:bg-black/30 transform hover:translate-y-1 shadow-lg`}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
+
+export default HoverButton;
