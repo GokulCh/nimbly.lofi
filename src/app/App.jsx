@@ -1,7 +1,12 @@
+import DefaultBackground from "../core/background/DefaultBackground";
 import "./styles/App.css";
 
 function App() {
-  return <></>;
+  return (
+    <>
+      <DefaultBackground />
+    </>
+  );
 }
 
 export default App;
