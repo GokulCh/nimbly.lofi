@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
 import { fetchAudiusSongs } from "./MusicService";
 
 const MusicContext = createContext();
@@ -13,7 +13,7 @@ const loadingTrack = {
   title: "Loading Track",
   artist: "Nimbly",
   album: "Loading",
-  streamUrl: "/audios/song.mp3",
+  streamUrl: "/",
   cover: "/images/placeholder.jpg"
 };
 
@@ -26,7 +26,7 @@ const offlineTrack = {
 };
 
 export function MusicProvider({ children }) {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
   const [volume, setVolume] = useState(70);
   const [songs, setSongs] = useState([loadingTrack]);
   const [shuffledSongs, setShuffledSongs] = useState([loadingTrack]);
@@ -35,10 +35,9 @@ export function MusicProvider({ children }) {
   const [duration, setDuration] = useState(0);
   const [offline, setOffline] = useState(false);
   const preloadAudioRef = useRef(null);
-
   const audioRef = useRef(null);
 
-  // 📦 Load Songs
+  // Load Songs
   useEffect(() => {
     const loadSongs = async () => {
       console.log("[MusicProvider] ⏬ Calling fetchAudiusSongs");
@@ -57,7 +56,7 @@ export function MusicProvider({ children }) {
     loadSongs();
   }, []);
 
-  // ▶️ Handle song change
+  // Handle song change
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || !shuffledSongs.length) return;
@@ -72,14 +71,14 @@ export function MusicProvider({ children }) {
     setCurrentTime(0);
   }, [currentSongIndex]);
 
-  // 🔊 Sync volume
+  // Sync volume
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = volume / 100;
     }
   }, [volume]);
 
-  // ⏱️ Track progress
+  // Track progress
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -105,21 +104,21 @@ export function MusicProvider({ children }) {
     const nextIndex = (currentSongIndex + 1) % shuffledSongs.length;
     if (preloadAudio && shuffledSongs[nextIndex]) {
       preloadAudio.src = shuffledSongs[nextIndex].streamUrl;
-      preloadAudio.load(); // Begin preloading
+      preloadAudio.load();
     }
   }, [currentSongIndex, shuffledSongs]);
 
-  // 🔁 Controls
-  const play = () => {
+  // Controls
+  const play = useCallback(() => {
     if (!audioRef.current) return;
     audioRef.current.play().catch((err) => console.warn("❌ Manual play failed:", err));
     setIsPlaying(true);
-  };
+  }, []);
 
-  const pause = () => {
+  const pause = useCallback(() => {
     audioRef.current?.pause();
     setIsPlaying(false);
-  };
+  }, []);
 
   const togglePlay = () => (isPlaying ? pause() : play());
 
@@ -130,7 +129,7 @@ export function MusicProvider({ children }) {
     }
   };
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (shuffledSongs.length <= 1 || offline) return;
 
     let nextIndex;
@@ -140,7 +139,7 @@ export function MusicProvider({ children }) {
 
     setCurrentSongIndex(nextIndex);
     setIsPlaying(true);
-  };
+  }, [shuffledSongs, currentSongIndex, offline]);
 
   const handlePrev = () => {
     seek(0);
@@ -150,6 +149,29 @@ export function MusicProvider({ children }) {
     setCurrentSongIndex(index);
     setIsPlaying(true);
   };
+
+  // Media Session API: Handle keyboard media keys
+  useEffect(() => {
+    if ("mediaSession" in navigator) {
+      navigator.mediaSession.setActionHandler("play", play);
+      navigator.mediaSession.setActionHandler("pause", pause);
+      navigator.mediaSession.setActionHandler("previoustrack", handlePrev);
+      navigator.mediaSession.setActionHandler("nexttrack", handleNext);
+    }
+  }, [play, pause, handleNext]);
+
+  // Media Session Metadata (lock screen / OS)
+  useEffect(() => {
+    if ("mediaSession" in navigator && shuffledSongs[currentSongIndex]) {
+      const song = shuffledSongs[currentSongIndex];
+      navigator.mediaSession.metadata = new window.MediaMetadata({
+        title: song.title,
+        artist: song.artist,
+        album: "Nimbly",
+        artwork: [{ src: song.cover, sizes: "150x150", type: "image/jpeg" }]
+      });
+    }
+  }, [shuffledSongs, currentSongIndex]);
 
   const contextValue = {
     isPlaying,
@@ -172,7 +194,10 @@ export function MusicProvider({ children }) {
   return (
     <MusicContext.Provider value={contextValue}>
       {shuffledSongs.length > 0 && (
-        <audio ref={audioRef} src={shuffledSongs[currentSongIndex]?.streamUrl} autoPlay={isPlaying} />
+        <>
+          <audio ref={audioRef} src={shuffledSongs[currentSongIndex]?.streamUrl} autoPlay={isPlaying} />
+          <audio ref={preloadAudioRef} preload="auto" style={{ display: "none" }} />
+        </>
       )}
       {children}
     </MusicContext.Provider>
