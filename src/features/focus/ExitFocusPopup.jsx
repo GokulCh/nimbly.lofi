@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import HoverButton from "../../components/ui/HoverButton";
 import { useFocus } from "./FocusProvider";
+import HoverButton from "../../components/ui/HoverButton";
 
 function ExitFocusPopup() {
   const [fadeIn, setFadeIn] = useState(false);
@@ -17,7 +17,7 @@ function ExitFocusPopup() {
     <>
       <HoverButton
         className={`absolute top-6 left-1/2 -translate-x-1/2 px-4 py-2 ${
-          focusMode ? "opacity-100" : "opacity-0 pointer-events-none"
+          focusMode ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
         onClick={toggleFocusMode}
       >

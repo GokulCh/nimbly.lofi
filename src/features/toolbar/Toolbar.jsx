@@ -28,7 +28,7 @@ function Toolbar() {
 
   return (
     <Panel
-      className={`left-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-5 p-3 py-7
+      className={`left-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-5 p-3 py-5
         ${
           focusMode
             ? "opacity-0 -translate-x-4 pointer-events-none"
