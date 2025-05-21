@@ -26,7 +26,7 @@ const offlineTrack = {
 };
 
 export function MusicProvider({ children }) {
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(70);
   const [songs, setSongs] = useState([loadingTrack]);
   const [shuffledSongs, setShuffledSongs] = useState([loadingTrack]);
