@@ -180,7 +180,7 @@ function TimerDisplay() {
             max="180"
             value={customMinutes}
             onChange={handleCustomMinutesChange}
-            className="w-16 px-2 py-1 bg-black/30 border border-white/10 rounded text-white text-center"
+            className="w-16 px-2 py-1 bg-black/25 border border-white/10 rounded text-white text-center"
           />
           <HoverButton className="px-3 py-1 text-sm" onClick={applyCustomTimer}>
             Set

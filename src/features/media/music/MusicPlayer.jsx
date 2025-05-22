@@ -128,7 +128,7 @@ function MusicPlayer() {
             </button>
 
             {showVolumeSlider && (
-              <div className="absolute bottom-0 right-full mr-5 p-2 py-4 rounded-lg bg-black/30 backdrop-blur-md border border-white/10 shadow-xl">
+              <div className="absolute bottom-0 right-full mr-5 p-2 py-4 rounded-lg bg-black/25 backdrop-blur-md border border-white/10 shadow-xl">
                 <div className="h-30 w-6 flex flex-col items-center">
                   <div className="relative h-full w-1 bg-white/10 rounded-full mx-auto">
                     <div
@@ -186,7 +186,7 @@ function MusicPlayer() {
             </button>
 
             {showPlaylist && (
-              <div className="absolute bottom-0 left-full ml-5 p-2 rounded-xl bg-black/20 backdrop-blur-md border border-white/10 shadow-xl w-72 max-h-96 overflow-hidden flex flex-col">
+              <div className="absolute bottom-0 left-full ml-5 p-2 rounded-xl bg-black/25 backdrop-blur-md border border-white/10 shadow-xl w-72 max-h-96 overflow-hidden flex flex-col">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="text-white text-sm font-medium">Up Next</h4>
                   <span className="text-white/50 text-xs">
