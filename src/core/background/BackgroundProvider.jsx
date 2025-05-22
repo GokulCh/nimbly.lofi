@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 const BackgroundContext = createContext();
-const DEFAULT_BG = "/images/placeholder_background_shoji.png";
+const DEFAULT_BG = "/images/placeholder_background_shoji2.png";
 
 export function BackgroundProvider({ children }) {
   const [background, setBackground] = useState(() => {

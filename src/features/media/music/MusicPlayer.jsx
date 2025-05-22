@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState, useRef } from "react";
 import { useMusic } from "./MusicProvider";
 import { useFocus } from "../../focus/FocusProvider";

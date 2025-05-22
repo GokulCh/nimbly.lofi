@@ -7,7 +7,7 @@ function ClockDisplay() {
 
   return (
     <div
-      className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-opacity duration-700 ease-in-out pointer-events-none ${
+      className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-opacity duration-700 ease-in-out pointer-events-none z-10 ${
         isDisplayed ? "opacity-100" : "opacity-0"
       }`}
     >

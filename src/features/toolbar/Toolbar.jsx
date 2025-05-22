@@ -6,11 +6,13 @@ import Tooltip from "@components/ui/Tooltip";
 import { useFocus } from "../focus/FocusProvider";
 import { AlarmClock, Grip, Images, MousePointerClick, Settings, Timer } from "lucide-react";
 import { useClock } from "../clock/ClockProvider";
+import { useTimer } from "../clock/TimerProvider";
 
 function Toolbar() {
   const [fadeIn, setFadeIn] = useState(false);
   const { focusMode, toggleFocusMode } = useFocus();
   const { toggleClock } = useClock();
+  const { toggleTimer } = useTimer();
 
   useEffect(() => {
     const timer = setTimeout(() => setFadeIn(true), 50);
@@ -20,7 +22,7 @@ function Toolbar() {
   const options = [
     { icon: <Grip size={22} />, label: "Focus mode", action: "focus", handler: () => toggleFocusMode() },
     // { icon: <Images size={22} />, label: "Backgrounds", action: "backgrounds", handler: null },
-    // { icon: <Timer size={22} />, label: "Timer", action: "timer", handler: null },
+    { icon: <Timer size={22} />, label: "Timer", action: "timer", handler: () => toggleTimer() },
     { icon: <AlarmClock size={22} />, label: "Clock", action: "clock", handler: () => toggleClock() }
     // { icon: <MousePointerClick size={22} />, label: "Rythem mode", action: "rythem", handler: null },
     // { icon: <Settings size={22} />, label: "Settings", action: "settings", handler: null }
@@ -28,7 +30,7 @@ function Toolbar() {
 
   return (
     <Panel
-      className={`left-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-5 p-3 py-5
+      className={`left-5 top-1/2 -translate-y-1/2 flex flex-col items-center gap-5 p-3 py-5
         ${
           focusMode
             ? "opacity-0 -translate-x-4 pointer-events-none"
