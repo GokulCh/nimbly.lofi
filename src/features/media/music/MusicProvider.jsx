@@ -38,23 +38,33 @@ export function MusicProvider({ children }) {
   const audioRef = useRef(null);
 
   // Load Songs
-  useEffect(() => {
-    const loadSongs = async () => {
-      console.log("[MusicProvider] ⏬ Calling fetchAudiusSongs");
-      try {
-        const fetched = await fetchAudiusSongs();
-        if (!fetched?.length) throw new Error("No songs fetched");
-        setSongs(fetched);
-        setShuffledSongs(shuffleArray(fetched));
-      } catch (err) {
-        console.warn("⚠️ Failed to fetch songs. Using offline fallback.");
-        setOffline(true);
-        setSongs([offlineTrack]);
-        setShuffledSongs([offlineTrack]);
-      }
-    };
-    loadSongs();
+  const appendSongs = useCallback((newBatch) => {
+    setSongs((prev) => {
+      const filtered = prev[0]?.title === "Loading Track" ? prev.slice(1) : prev;
+      return [...filtered, ...newBatch];
+    });
+
+    setShuffledSongs((prev) => {
+      const filtered = prev[0]?.title === "Loading Track" ? prev.slice(1) : prev;
+      return [...filtered, ...shuffleArray(newBatch)];
+    });
   }, []);
+
+  // Load Songs
+  useEffect(() => {
+    setSongs([loadingTrack]);
+    setShuffledSongs([loadingTrack]);
+    setOffline(false);
+
+    fetchAudiusSongs((batch) => {
+      appendSongs(batch);
+    }).catch((err) => {
+      console.warn("⚠️ Failed to fetch songs. Using offline fallback.");
+      setOffline(true);
+      setSongs([offlineTrack]);
+      setShuffledSongs([offlineTrack]);
+    });
+  }, [appendSongs]);
 
   // Handle song change
   useEffect(() => {

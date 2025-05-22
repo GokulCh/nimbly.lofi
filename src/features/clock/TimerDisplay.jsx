@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useTimer } from "./TimerProvider";
 import { useFocus } from "../focus/FocusProvider";
 import Panel from "@components/ui/Panel";
@@ -21,6 +21,7 @@ function TimerDisplay() {
   } = useTimer();
 
   const { focusMode } = useFocus();
+  const panelRef = useRef(null);
   const [fadeIn, setFadeIn] = useState(false);
   const [customMinutes, setCustomMinutes] = useState(25);
   const [isMobile, setIsMobile] = useState(false);
@@ -57,6 +58,17 @@ function TimerDisplay() {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (panelRef.current && !panelRef.current.contains(event.target) && isDisplayed && !isRunning) {
+        toggleTimer();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isDisplayed, isRunning, toggleTimer]);
+
   const handleCustomMinutesChange = (e) => {
     const value = Number.parseInt(e.target.value, 10);
     if (!isNaN(value) && value > 0 && value <= 180) {
@@ -75,6 +87,7 @@ function TimerDisplay() {
 
   return (
     <Panel
+      ref={panelRef}
       className={`fixed p-6 z-20 ${positionClass}
         ${focusMode ? "opacity-0 pointer-events-none" : ""}
         ${

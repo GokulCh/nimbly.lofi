@@ -8,11 +8,9 @@ import FeatureProvider from "../features/FeatureProvider";
 import "./styles/main.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <CoreProvider>
-      <FeatureProvider>
-        <App />
-      </FeatureProvider>
-    </CoreProvider>
-  </React.StrictMode>
+  <CoreProvider>
+    <FeatureProvider>
+      <App />
+    </FeatureProvider>
+  </CoreProvider>
 );

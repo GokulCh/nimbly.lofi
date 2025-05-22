@@ -16,7 +16,7 @@ function ExitFocusPopup() {
   return (
     <>
       <HoverButton
-        className={`absolute top-6 left-1/2 -translate-x-1/2 px-4 py-2 ${
+        className={`absolute top-6 left-1/2 -translate-x-1/2 px-4 py-2 hover:translate-y-1 ${
           focusMode ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
         onClick={toggleFocusMode}
