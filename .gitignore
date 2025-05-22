@@ -14,6 +14,18 @@ dist
 dist-ssr
 *.local
 
+# Tauri build
+/src-tauri/target
+/src-tauri/.cargo
+/src-tauri/Cargo.lock
+
+# Environment files
+.env
+.env.*
+
+# OS-specific
+Thumbs.db
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
