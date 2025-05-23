@@ -34,10 +34,10 @@ export function MusicProvider({ children }) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [offline, setOffline] = useState(false);
+  const [previousStack, setPreviousStack] = useState([]);
   const preloadAudioRef = useRef(null);
   const audioRef = useRef(null);
 
-  // Load Songs
   const appendSongs = useCallback((newBatch) => {
     setSongs((prev) => {
       const filtered = prev[0]?.title === "Loading Track" ? prev.slice(1) : prev;
@@ -50,7 +50,6 @@ export function MusicProvider({ children }) {
     });
   }, []);
 
-  // Load Songs
   useEffect(() => {
     setSongs([loadingTrack]);
     setShuffledSongs([loadingTrack]);
@@ -66,7 +65,6 @@ export function MusicProvider({ children }) {
     });
   }, [appendSongs]);
 
-  // Handle song change
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || !shuffledSongs.length) return;
@@ -81,14 +79,12 @@ export function MusicProvider({ children }) {
     setCurrentTime(0);
   }, [currentSongIndex]);
 
-  // Sync volume
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = volume / 100;
     }
   }, [volume]);
 
-  // Track progress
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -118,7 +114,6 @@ export function MusicProvider({ children }) {
     }
   }, [currentSongIndex, shuffledSongs]);
 
-  // Controls
   const play = useCallback(() => {
     if (!audioRef.current) return;
     audioRef.current.play().catch((err) => console.warn("❌ Manual play failed:", err));
@@ -147,20 +142,31 @@ export function MusicProvider({ children }) {
       nextIndex = Math.floor(Math.random() * shuffledSongs.length);
     } while (nextIndex === currentSongIndex);
 
+    setPreviousStack((prev) => [...prev.slice(-49), currentSongIndex]);
     setCurrentSongIndex(nextIndex);
     setIsPlaying(true);
   }, [shuffledSongs, currentSongIndex, offline]);
 
   const handlePrev = () => {
-    seek(0);
+    if (currentTime > 3 || previousStack.length === 0) {
+      seek(0);
+      return;
+    }
+
+    const lastIndex = previousStack[previousStack.length - 1];
+    setPreviousStack((prev) => prev.slice(0, -1));
+    setCurrentSongIndex(lastIndex);
+    setIsPlaying(true);
   };
 
   const setSongIndex = (index) => {
+    if (index !== currentSongIndex) {
+      setPreviousStack((prev) => [...prev.slice(-49), currentSongIndex]);
+    }
     setCurrentSongIndex(index);
     setIsPlaying(true);
   };
 
-  // Media Session API: Handle keyboard media keys
   useEffect(() => {
     if ("mediaSession" in navigator) {
       navigator.mediaSession.setActionHandler("play", play);
@@ -170,7 +176,6 @@ export function MusicProvider({ children }) {
     }
   }, [play, pause, handleNext]);
 
-  // Media Session Metadata (lock screen / OS)
   useEffect(() => {
     if ("mediaSession" in navigator && shuffledSongs[currentSongIndex]) {
       const song = shuffledSongs[currentSongIndex];
