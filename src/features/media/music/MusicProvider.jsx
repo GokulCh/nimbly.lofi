@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
 import { fetchAudiusSongs } from "./MusicService";
+import { initRPC, setDynamicPresence } from "../../../core/discord/DiscordRPC.js";
 
 const MusicContext = createContext();
 
@@ -37,7 +38,6 @@ export function MusicProvider({ children }) {
   const preloadAudioRef = useRef(null);
   const audioRef = useRef(null);
 
-  // Load Songs
   const appendSongs = useCallback((newBatch) => {
     setSongs((prev) => {
       const filtered = prev[0]?.title === "Loading Track" ? prev.slice(1) : prev;
@@ -50,7 +50,6 @@ export function MusicProvider({ children }) {
     });
   }, []);
 
-  // Load Songs
   useEffect(() => {
     setSongs([loadingTrack]);
     setShuffledSongs([loadingTrack]);
@@ -66,7 +65,6 @@ export function MusicProvider({ children }) {
     });
   }, [appendSongs]);
 
-  // Handle song change
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || !shuffledSongs.length) return;
@@ -81,14 +79,12 @@ export function MusicProvider({ children }) {
     setCurrentTime(0);
   }, [currentSongIndex]);
 
-  // Sync volume
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = volume / 100;
     }
   }, [volume]);
 
-  // Track progress
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -118,7 +114,6 @@ export function MusicProvider({ children }) {
     }
   }, [currentSongIndex, shuffledSongs]);
 
-  // Controls
   const play = useCallback(() => {
     if (!audioRef.current) return;
     audioRef.current.play().catch((err) => console.warn("❌ Manual play failed:", err));
@@ -160,7 +155,7 @@ export function MusicProvider({ children }) {
     setIsPlaying(true);
   };
 
-  // Media Session API: Handle keyboard media keys
+  // Media Session API
   useEffect(() => {
     if ("mediaSession" in navigator) {
       navigator.mediaSession.setActionHandler("play", play);
@@ -170,7 +165,6 @@ export function MusicProvider({ children }) {
     }
   }, [play, pause, handleNext]);
 
-  // Media Session Metadata (lock screen / OS)
   useEffect(() => {
     if ("mediaSession" in navigator && shuffledSongs[currentSongIndex]) {
       const song = shuffledSongs[currentSongIndex];
@@ -181,6 +175,19 @@ export function MusicProvider({ children }) {
         artwork: [{ src: song.cover, sizes: "150x150", type: "image/jpeg" }]
       });
     }
+  }, [shuffledSongs, currentSongIndex]);
+
+  // Discord Rich Presence – start only when a valid song begins
+  useEffect(() => {
+    const song = shuffledSongs[currentSongIndex];
+    if (!song || song.title === "Loading Track") return;
+
+    const startDRPC = async () => {
+      await initRPC();
+      await setDynamicPresence(song);
+    };
+
+    startDRPC();
   }, [shuffledSongs, currentSongIndex]);
 
   const contextValue = {
