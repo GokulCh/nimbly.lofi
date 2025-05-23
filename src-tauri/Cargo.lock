@@ -99,7 +99,6 @@ dependencies = [
  "serde_json",
  "tauri",
  "tauri-build",
- "tauri-plugin-drpc",
  "tauri-plugin-log",
 ]
 
@@ -413,7 +412,7 @@ checksum = "d38f2da7a0a2c4ccf0065be06397cc26a81f4e528be095826eee9d4adbb8c60f"
 dependencies = [
  "byteorder",
  "fnv",
- "uuid 1.16.0",
+ "uuid",
 ]
 
 [[package]]
@@ -2784,7 +2783,7 @@ dependencies = [
  "rkyv_derive",
  "seahash",
  "tinyvec",
- "uuid 1.16.0",
+ "uuid",
 ]
 
 [[package]]
@@ -2796,19 +2795,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 1.0.109",
-]
-
-[[package]]
-name = "rpcdiscord"
-version = "0.2.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "71aa9a2097dc0176805e24debcb5d3ea5a17b796cd1d28e76b29f78fb49d7d5d"
-dependencies = [
- "serde",
- "serde_derive",
- "serde_json",
- "serde_repr",
- "uuid 0.8.2",
 ]
 
 [[package]]
@@ -2875,7 +2861,7 @@ dependencies = [
  "serde",
  "serde_json",
  "url",
- "uuid 1.16.0",
+ "uuid",
 ]
 
 [[package]]
@@ -3454,7 +3440,7 @@ dependencies = [
  "thiserror 2.0.12",
  "time",
  "url",
- "uuid 1.16.0",
+ "uuid",
  "walkdir",
 ]
 
@@ -3487,22 +3473,6 @@ dependencies = [
  "tauri-utils",
  "toml",
  "walkdir",
-]
-
-[[package]]
-name = "tauri-plugin-drpc"
-version = "0.1.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b291669b7dbc05471fba380eeecf31e3f733ae6013aaa5216a43ca376027e5a"
-dependencies = [
- "log",
- "rpcdiscord",
- "serde",
- "serde_json",
- "tauri",
- "tauri-plugin",
- "thiserror 2.0.12",
- "tokio",
 ]
 
 [[package]]
@@ -3610,7 +3580,7 @@ dependencies = [
  "toml",
  "url",
  "urlpattern",
- "uuid 1.16.0",
+ "uuid",
  "walkdir",
 ]
 
@@ -4011,15 +3981,6 @@ name = "utf8_iter"
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b6c140620e7ffbb22c2dee59cafe6084a59b5ffc27a8859a5f0d494b5d52b6be"
-
-[[package]]
-name = "uuid"
-version = "0.8.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bc5cf98d8186244414c848017f0e2676b3fcb46807f6668a97dfe67359a3c4b7"
-dependencies = [
- "getrandom 0.2.16",
-]
 
 [[package]]
 name = "uuid"

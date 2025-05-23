@@ -12,10 +12,4 @@ export default defineConfig({
       '@assets': path.resolve(__dirname, 'public/'),
     },
   },
-  build: {
-    target: ['es2021', 'chrome100', 'safari13'],
-  },
-  define: {
-    __TAURI__: true,
-  },
 });
