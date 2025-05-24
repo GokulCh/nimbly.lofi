@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { useMusic } from "./MusicProvider";
 import { useFocus } from "../../focus/FocusProvider";
 import Panel from "@components/ui/Panel";
-import { ChevronLeft, List, Pause, Play, SkipBack, SkipForward, Volume2, VolumeX } from "lucide-react";
+import { ChevronLeft, List, Pause, Play, SkipBack, SkipForward, Volume1, Volume2, VolumeX } from "lucide-react";
 
 const formatTime = (sec = 0) => {
   const m = Math.floor(sec / 60);
@@ -62,7 +62,6 @@ function MusicPlayer() {
   useEffect(() => {
     if (showPlaylist && songRefs.current[currentSongIndex]) {
       songRefs.current[currentSongIndex].scrollIntoView({
-        behavior: "smooth",
         block: "start"
       });
     }
@@ -77,7 +76,7 @@ function MusicPlayer() {
             : fadeIn
             ? "opacity-100 translate-y-0"
             : "opacity-0 translate-y-4"
-        }`}
+        } transition-all duration-500`}
     >
       <div className="flex flex-col gap-2">
         {/* Song Info */}
@@ -124,34 +123,36 @@ function MusicPlayer() {
               className="w-8 h-8 flex items-center justify-center text-white/80 hover:text-white rounded-md hover:bg-white/10 transition-colors"
               onClick={() => setShowVolumeSlider(!showVolumeSlider)}
             >
-              {volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
+              {volume === 0 ? <VolumeX size={18} /> : volume <= 50 ? <Volume1 size={18} /> : <Volume2 size={18} />}
             </button>
 
-            {showVolumeSlider && (
-              <div className="absolute bottom-0 right-full mr-5 p-2 py-4 rounded-lg bg-black/25 backdrop-blur-md border border-white/10 shadow-xl">
-                <div className="h-30 w-6 flex flex-col items-center">
-                  <div className="relative h-full w-1 bg-white/10 rounded-full mx-auto">
-                    <div
-                      className="absolute bottom-0 left-0 w-full bg-white rounded-full"
-                      style={{ height: `${volume}%` }}
-                    />
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      value={volume}
-                      onChange={(e) => setPlayerVolume(parseInt(e.target.value))}
-                      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 w-[100px] h-6 cursor-pointer appearance-none"
-                      style={{
-                        transform: "rotate(270deg)",
-                        transformOrigin: "center"
-                      }}
-                    />
-                  </div>
-                  <span className="text-white text-xs mt-1">{volume}%</span>
+            <div
+              className={`absolute bottom-0 right-full mr-5 p-2 py-4 rounded-lg bg-black/25 backdrop-blur-md border border-white/10 shadow-xl transition-all duration-300 transform origin-bottom-right ${
+                showVolumeSlider ? "opacity-100 scale-100" : "opacity-0 scale-85 pointer-events-none"
+              }`}
+            >
+              <div className="h-30 w-6 flex flex-col items-center">
+                <div className="relative h-full w-1 bg-white/10 rounded-full mx-auto">
+                  <div
+                    className="absolute bottom-0 left-0 w-full bg-white rounded-full"
+                    style={{ height: `${volume}%` }}
+                  />
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={volume}
+                    onChange={(e) => setPlayerVolume(parseInt(e.target.value))}
+                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 w-[100px] h-6 cursor-pointer appearance-none"
+                    style={{
+                      transform: "rotate(270deg)",
+                      transformOrigin: "center"
+                    }}
+                  />
                 </div>
+                <span className="text-white text-xs mt-1">{volume}%</span>
               </div>
-            )}
+            </div>
           </div>
 
           {/* Play Controls */}
@@ -185,48 +186,48 @@ function MusicPlayer() {
               <List size={18} />
             </button>
 
-            {showPlaylist && (
-              <div className="absolute bottom-0 left-full ml-5 p-2 rounded-xl bg-black/25 backdrop-blur-md border border-white/10 shadow-xl w-72 max-h-96 overflow-hidden flex flex-col">
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-white text-sm font-medium">Up Next</h4>
-                  <span className="text-white/50 text-xs">
-                    Song {currentSongIndex + 1} of {songs.length}
-                  </span>
-                  <button
-                    className="text-white/60 hover:text-white text-xs flex items-center gap-1"
-                    onClick={() => setShowPlaylist(false)}
-                  >
-                    Close <ChevronLeft size={14} />
-                  </button>
-                </div>
-
-                <div className="overflow-y-auto pr-1 space-y-2 flex-1 custom-scrollbar">
-                  {songs.map((song, index) => {
-                    return (
-                      <div
-                        key={song.id}
-                        ref={(el) => (songRefs.current[index] = el)}
-                        className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-colors ${
-                          index === currentSongIndex ? "bg-white/10" : "hover:bg-white/5"
-                        }`}
-                        onClick={() => setSongIndex(index)}
-                      >
-                        <img
-                          src={song.cover || "/placeholder.svg"}
-                          alt={`${song.title} cover`}
-                          className="w-8 h-8 rounded object-cover"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-white text-sm truncate">{song.title}</p>
-                          <p className="text-white/60 text-xs truncate">{song.artist}</p>
-                        </div>
-                        <span className="text-white/60 text-xs">{song.duration}</span>
-                      </div>
-                    );
-                  })}
-                </div>
+            <div
+              className={`absolute bottom-0 left-full ml-5 p-2 rounded-xl bg-black/25 backdrop-blur-md border border-white/10 shadow-xl w-72 max-h-96 overflow-hidden flex flex-col transition-all duration-300 transform origin-bottom-left ${
+                showPlaylist ? "opacity-100 scale-100" : "opacity-0 scale-85 pointer-events-none"
+              }`}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-white text-sm font-medium">Up Next</h4>
+                <span className="text-white/50 text-xs">
+                  Song {currentSongIndex + 1} of {songs.length}
+                </span>
+                <button
+                  className="text-white/60 hover:text-white text-xs flex items-center gap-1 px-2 py-1 hover:bg-white/10 rounded-md"
+                  onClick={() => setShowPlaylist(false)}
+                >
+                  Close <ChevronLeft size={14} />
+                </button>
               </div>
-            )}
+
+              <div className="overflow-y-auto pr-1 space-y-2 flex-1 custom-scrollbar">
+                {songs.map((song, index) => (
+                  <div
+                    key={song.id}
+                    ref={(el) => (songRefs.current[index] = el)}
+                    className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-colors ${
+                      index === currentSongIndex ? "bg-white/10" : "hover:bg-white/5"
+                    }`}
+                    onClick={() => setSongIndex(index)}
+                  >
+                    <img
+                      src={song.cover || "/placeholder.svg"}
+                      alt={`${song.title} cover`}
+                      className="w-8 h-8 rounded object-cover"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white text-sm truncate">{song.title}</p>
+                      <p className="text-white/60 text-xs truncate">{song.artist}</p>
+                    </div>
+                    <span className="text-white/60 text-xs">{song.duration}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
