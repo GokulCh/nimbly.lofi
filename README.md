@@ -78,18 +78,6 @@ npx tauri build
 
 ---
 
-## 🖼️ Screenshots
-
-_Add your screenshots here to showcase features and UI!_
-
----
-
-## 📄 License
-
-MIT License (see [LICENSE](LICENSE) for details).
-
----
-
 ## 🔗 Links
 
 - [Live Demo](https://nimbly-lofi.vercel.app)
