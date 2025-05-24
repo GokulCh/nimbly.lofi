@@ -5,7 +5,7 @@ import { useTimer } from "./TimerProvider";
 import { useFocus } from "../focus/FocusProvider";
 import Panel from "@components/ui/Panel";
 import HoverButton from "@components/ui/HoverButton";
-import { Play, Pause, RefreshCw, X } from "lucide-react";
+import { Play, Pause, RefreshCw, X, ChevronUp, ChevronDown } from "lucide-react";
 
 function TimerDisplay() {
   const {
@@ -17,29 +17,30 @@ function TimerDisplay() {
     startTimer,
     pauseTimer,
     resetTimer,
-    setTimer
+    setTimer,
+    timeInSeconds
   } = useTimer();
 
   const { focusMode } = useFocus();
   const panelRef = useRef(null);
   const [fadeIn, setFadeIn] = useState(false);
-  const [customMinutes, setCustomMinutes] = useState(25);
+  const [customMinutes, setCustomMinutes] = useState(30);
   const [isMobile, setIsMobile] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
 
-  // Format seconds to MM:SS
+  // Format seconds to HH:MM:SS always
   const formatTime = (totalSeconds) => {
-    const minutes = Math.floor(totalSeconds / 60);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
-    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   };
 
-  // Preset timer durations
-  const presets = [
-    { label: "5", minutes: 5 },
-    { label: "15", minutes: 15 },
-    { label: "25", minutes: 25 },
-    { label: "45", minutes: 45 }
-  ];
+  // Update customMinutes when timeInSeconds changes
+  useEffect(() => {
+    setCustomMinutes(Math.floor(timeInSeconds / 60));
+  }, [timeInSeconds]);
 
   // Check if device is mobile
   useEffect(() => {
@@ -69,16 +70,39 @@ function TimerDisplay() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isDisplayed, isRunning, toggleTimer]);
 
-  const handleCustomMinutesChange = (e) => {
-    const value = Number.parseInt(e.target.value, 10);
-    if (!isNaN(value) && value > 0 && value <= 180) {
-      setCustomMinutes(value);
-    }
-  };
+  // Handle mouse wheel scrolling
+  useEffect(() => {
+    const handleWheel = (e) => {
+      if (!panelRef.current || isRunning) return;
 
-  const applyCustomTimer = () => {
-    setTimer(customMinutes);
-  };
+      // Check if the mouse is over the panel
+      const rect = panelRef.current.getBoundingClientRect();
+      const isOverPanel =
+        e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom;
+
+      if (isOverPanel) {
+        e.preventDefault();
+
+        const currentMinutes = Math.floor(timeInSeconds / 60);
+        let newMinutes;
+
+        if (e.deltaY < 0) {
+          // Scrolling up - increase time
+          newMinutes = Math.min(currentMinutes + 1, 1440); // 24 hours max
+        } else {
+          // Scrolling down - decrease time
+          newMinutes = Math.max(currentMinutes - 1, 1);
+        }
+
+        if (newMinutes !== currentMinutes) {
+          setTimer(newMinutes);
+        }
+      }
+    };
+
+    document.addEventListener("wheel", handleWheel, { passive: false });
+    return () => document.removeEventListener("wheel", handleWheel);
+  }, [isRunning, timeInSeconds, setTimer]);
 
   // Determine position based on screen size
   const positionClass = isMobile
@@ -97,13 +121,13 @@ function TimerDisplay() {
               : "opacity-0 scale-95"
             : "opacity-0 scale-95 pointer-events-none"
         }
-        transition-all duration-700 ease-in-out
-        ${isRunning ? "w-64" : "w-[280px] sm:w-80"}`}
+        transition-all duration-700 ease-in-out`}
       style={{
         height: "auto",
-        minHeight: isRunning ? "160px" : "240px",
         transition: "all 0.7s ease-in-out, height 0.7s ease-in-out, min-height 0.7s ease-in-out"
       }}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
     >
       <div className="flex flex-col items-center gap-6 w-full transition-all duration-700 ease-in-out">
         {/* Close button */}
@@ -116,14 +140,35 @@ function TimerDisplay() {
           </button>
         </div>
 
-        {/* Timer display */}
+        {/* Timer display with background and arrows */}
         <div
-          className={`text-4xl sm:text-5xl font-mono text-white transition-all duration-500 ease-in-out ${
-            isCompleted ? "animate-pulse text-red-400" : ""
-          }`}
+          className="relative bg-black/20 rounded-lg px-6 py-4 transition-all duration-500 ease-in-out"
           style={{ marginTop: isRunning ? "0.5rem" : "1.5rem" }}
         >
-          {formatTime(remainingSeconds)}
+          <div className="flex items-center gap-3">
+            {/* Up/Down arrows - only visible when not running */}
+            <div
+              className={`flex flex-col transition-all duration-300 ${
+                isRunning ? "opacity-0 pointer-events-none w-0" : isHovering ? "opacity-80" : "opacity-50"
+              }`}
+              style={{
+                width: isRunning ? "0px" : "16px",
+                transition: "all 0.3s ease-in-out"
+              }}
+            >
+              <ChevronUp size={16} />
+              <ChevronDown size={16} className="-mt-1" />
+            </div>
+
+            {/* Timer text */}
+            <div
+              className={`text-4xl sm:text-5xl font-mono text-white transition-all duration-500 ease-in-out ${
+                isCompleted ? "animate-pulse text-red-400" : ""
+              }`}
+            >
+              {formatTime(remainingSeconds)}
+            </div>
+          </div>
         </div>
 
         {/* Timer controls */}
@@ -144,46 +189,6 @@ function TimerDisplay() {
 
           <HoverButton className="w-12 h-12 flex items-center justify-center rounded-full" onClick={resetTimer}>
             <RefreshCw size={20} />
-          </HoverButton>
-        </div>
-
-        {/* Preset timers */}
-        <div
-          className="flex flex-wrap items-center gap-2 w-full justify-center transition-all duration-500 ease-in-out overflow-hidden"
-          style={{
-            maxHeight: isRunning ? "0" : "80px", // Increased for potential wrapping
-            opacity: isRunning ? 0 : 1,
-            marginTop: isRunning ? "0" : "0.5rem",
-            pointerEvents: isRunning ? "none" : "auto"
-          }}
-        >
-          {presets.map((preset) => (
-            <HoverButton key={preset.minutes} className="px-3 py-1 text-sm" onClick={() => setTimer(preset.minutes)}>
-              {preset.label}m
-            </HoverButton>
-          ))}
-        </div>
-
-        {/* Custom timer input */}
-        <div
-          className="flex items-center gap-2 w-full justify-center transition-all duration-500 ease-in-out overflow-hidden"
-          style={{
-            maxHeight: isRunning ? "0" : "40px",
-            opacity: isRunning ? 0 : 1,
-            marginTop: isRunning ? "0" : "0.5rem",
-            pointerEvents: isRunning ? "none" : "auto"
-          }}
-        >
-          <input
-            type="number"
-            min="1"
-            max="180"
-            value={customMinutes}
-            onChange={handleCustomMinutesChange}
-            className="w-16 px-2 py-1 bg-black/25 border border-white/10 rounded text-white text-center"
-          />
-          <HoverButton className="px-3 py-1 text-sm" onClick={applyCustomTimer}>
-            Set
           </HoverButton>
         </div>
       </div>

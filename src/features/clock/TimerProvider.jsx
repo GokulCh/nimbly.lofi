@@ -85,7 +85,8 @@ export function TimerProvider({ children }) {
         startTimer,
         pauseTimer,
         resetTimer,
-        setTimer
+        setTimer,
+        timeInSeconds
       }}
     >
       {children}
